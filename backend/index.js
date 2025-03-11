@@ -7,6 +7,11 @@ const dotenv = require("dotenv");
 const PORT = process.env.PORT || 3000;
 require("./config/mongoose_config.js");
 const { swaggerDocs } = require("./utils/swagger.js");
+const winston = require('winston');
+const morgan = require('morgan');
+const logger = require('./utils/logger.js');
+const fs = require('fs');
+const helmet = require('helmet');
 // Load environment variables
 
 
@@ -19,6 +24,7 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+// app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 // // File Storage
@@ -34,6 +40,29 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // const upload = multer({ storage: Storage });
 
+// Ensure logs directory exists
+const logDirectory = path.join(__dirname, './utils/logs');
+if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory);
+}
+// Create a write stream for logging requests
+const accessLogStream = fs.createWriteStream(path.join(logDirectory, 'access.log'), { flags: 'a' });
+
+// Morgan middleware to log requests
+app.use(morgan('combined', { stream: accessLogStream }));  // Logs to access.log
+app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }));  // Logs to Winston
+
+app.get('/error-test', (req, res, next) => {
+    const err = new Error('This is a test error');
+    err.status = 500;
+    next(err); // Pass the error to the error-handling middleware
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    logger.error(`${req.method} ${req.url} - ${err.message}`);
+    res.status(500).send('Internal Server Error');
+});
 
 // Routes
 const indexRouter = require("./routes/indexRouter.js");
