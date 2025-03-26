@@ -18,13 +18,17 @@ const helmet = require('helmet');
 // Middleware
 const app = express();
 dotenv.config();
+
+//Application level middleware
 app.use(cors({
     origin: ['http://localhost:5173', 'https://mealmonkey-food.vercel.app'], // Your frontend URL
     credentials: true // This allows cookies to be included in cross-origin requests
 }));
 app.use(cookieParser());
-app.use(express.json());
 // app.use(helmet());
+
+//Built-in middleware
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 // // File Storage
@@ -48,9 +52,10 @@ if (!fs.existsSync(logDirectory)) {
 // Create a write stream for logging requests
 const accessLogStream = fs.createWriteStream(path.join(logDirectory, 'access.log'), { flags: 'a' });
 
-// Morgan middleware to log requests
+// Third party middleware
 app.use(morgan('combined', { stream: accessLogStream }));  // Logs to access.log
 app.use(morgan('tiny', { stream: { write: message => logger.info(message.trim()) } }));  // Logs to Winston
+
 
 app.get('/error-test', (req, res, next) => {
     const err = new Error('This is a test error');
