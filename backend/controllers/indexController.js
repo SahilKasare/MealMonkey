@@ -157,18 +157,18 @@ module.exports.login = async function(req, res) {
         bcrypt.compare(password, user.password, function(err, result) {
             if (result) {
                 let token = generateToken(user);
-                res.cookie("token", token);
-                res.cookie("role", user.role);
-                // res.cookie('token', token, {
-                //     httpOnly: true,
-                //     secure: true,  // Set to true for HTTPS
-                //     sameSite: 'None'  // For cross-origin requests
-                // });
-                // res.cookie('role', user.role, {
-                //     httpOnly: true,
-                //     secure: true, // Make sure this is set to true if you're using HTTPS
-                //     sameSite: 'None', // Needed for cross-origin cookies
-                // });
+                // res.cookie("token", token);
+                // res.cookie("role", user.role);
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    // secure: true,  // Set to true for HTTPS
+                    // sameSite: 'None'  // For cross-origin requests
+                });
+                res.cookie('role', user.role, {
+                    httpOnly: true,
+                    // secure: true, // Make sure this is set to true if you're using HTTPS
+                    // sameSite: 'None', // Needed for cross-origin cookies
+                });
                   
                 res.status(200).json({
                     message: "Login successful",
