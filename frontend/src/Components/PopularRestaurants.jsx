@@ -247,7 +247,7 @@ const PopularRestaurants = () => {
                             >
                                 <div className="relative overflow-hidden">
                                     <img 
-                                        src={`http://localhost:3000${restaurant.photos[0]}`|| "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"} 
+                                        src={`https://mealmonkey.onrender.com${restaurant.photos[0]}`|| "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"} 
                                         alt={restaurant.hotelName || 'Restaurant Image'} 
                                         className="w-full h-56 object-cover transition-transform duration-700 group-hover:scale-110"
                                     />

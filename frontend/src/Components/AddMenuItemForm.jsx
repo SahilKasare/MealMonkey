@@ -21,7 +21,7 @@ const AddMenuItemForm = () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:3000/restaurant/menu/item',
+        'https://mealmonkey.onrender.com/restaurant/menu/item',
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

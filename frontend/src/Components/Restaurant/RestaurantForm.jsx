@@ -505,7 +505,7 @@ const RestaurantForm = () => {
     }
   
     try {
-      const response = await axios.post('http://localhost:3000/restaurant/profile', formData, {
+      const response = await axios.post('https://mealmonkey.onrender.com/restaurant/profile', formData, {
         // Content-Type is not set; let the browser handle it
         headers: {
           'Content-Type': 'multipart/form-data', // Set the correct content type

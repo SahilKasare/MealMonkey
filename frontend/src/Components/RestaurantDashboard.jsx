@@ -89,7 +89,7 @@ const RestaurantDashboard = () => {
                     <div className="relative h-64">
                         {restaurant.photos && restaurant.photos[0] && (
                             <img
-                                src={`http://localhost:3000${restaurant.photos[0]}`}
+                                src={`https://mealmonkey.onrender.com${restaurant.photos[0]}`}
                                 alt="Restaurant"
                                 className="w-full h-full object-cover"
                             />

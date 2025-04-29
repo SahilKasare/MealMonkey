@@ -164,7 +164,7 @@ const RestaurantMenu = () => {
     >
       <div className="relative">
         <img
-          src={menuItem.image ? `http://localhost:3000${menuItem.image}` : "/public/Images/1727358391236.jpeg"}
+          src={menuItem.image ? `https://mealmonkey.onrender.com${menuItem.image}` : "/public/Images/1727358391236.jpeg"}
           alt={menuItem.name}
           className="w-36 h-36 object-cover rounded-md"
         />
@@ -330,7 +330,7 @@ const RestaurantMenu = () => {
             {restaurantDetails.photos.map((photo, index) => (
               <img
                 key={index}
-                src={`http://localhost:3000${photo}`}
+                src={`https://mealmonkey.onrender.com${photo}`}
                 alt={`Restaurant Photo ${index + 1}`}
                 className="w-full h-64 object-cover rounded-lg border-4 border-orange-300 shadow-md"
               />
