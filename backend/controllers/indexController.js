@@ -161,13 +161,13 @@ module.exports.login = async function(req, res) {
                 // res.cookie("role", user.role);
                 res.cookie('token', token, {
                     httpOnly: true,
-                    // secure: true,  // Set to true for HTTPS
-                    // sameSite: 'None'  // For cross-origin requests
+                    secure: true,  // Set to true for HTTPS
+                    sameSite: 'None'  // For cross-origin requests
                 });
                 res.cookie('role', user.role, {
                     httpOnly: true,
-                    // secure: true, // Make sure this is set to true if you're using HTTPS
-                    // sameSite: 'None', // Needed for cross-origin cookies
+                    secure: true, // Make sure this is set to true if you're using HTTPS
+                    sameSite: 'None', // Needed for cross-origin cookies
                 });
                   
                 res.status(200).json({
