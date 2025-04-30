@@ -1,7 +1,6 @@
 // src/contexts/UserContext.js
 import  { createContext, useContext, useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance'; // Adjust the import path as necessary
-import axios from 'axios';
 
 const UserContext = createContext();
 
@@ -12,7 +11,7 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get('https://mealmonkey.onrender.com/get_user'); // Using axiosInstance here
+                const response = await axiosInstance.get('/get_user'); // Using axiosInstance here
                 // console.log('User data received:', response.data); 
                 setUser(response.data);
             } catch (error) {
