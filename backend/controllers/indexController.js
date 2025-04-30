@@ -195,7 +195,7 @@ module.exports.logout = function(req, res) {
         secure: true, 
         sameSite: 'None', 
     });
-    res.redirect(303,"/");
+    res.status(200).json({ message: "Logged out" });
 };
 
 const getStartOfDay = () => {
