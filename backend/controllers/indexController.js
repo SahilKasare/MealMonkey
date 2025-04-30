@@ -136,7 +136,7 @@ module.exports.register = async function(req, res) {
         res.status(500).send("Error in registering user");
     }
 };
-
+const isProduction = process.env.NODE_ENV === "production";
 module.exports.login = async function(req, res) {
     try {
         let { email, password } = req.body;
@@ -155,8 +155,19 @@ module.exports.login = async function(req, res) {
         bcrypt.compare(password, user.password, function(err, result) {
             if (result) {
                 let token = generateToken(user);
-                res.cookie("token", token);
-                res.cookie("role", user.role);
+                // res.cookie("token", token);
+                // res.cookie("role", user.role);
+                res.cookie("token", token, {
+                  httpOnly: true,
+                  secure: isProduction,              // true if using HTTPS
+                  sameSite: isProduction ? "None" : "Lax", // None for cross-site cookies
+                });
+
+                res.cookie("role", user.role, {
+                  httpOnly: true,
+                  secure: isProduction,
+                  sameSite: isProduction ? "None" : "Lax",
+                });
                 res.status(200).json({
                     message: "Login successful",
                     role: user.role
