@@ -12,7 +12,7 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get('https://mealmonkey.onrender.com/get_user'); // Using axiosInstance here
+                const response = await axios.get('http://localhost:3000/get_user'); // Using axiosInstance here
                 // console.log('User data received:', response.data); 
                 setUser(response.data);
             } catch (error) {

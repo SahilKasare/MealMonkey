@@ -97,7 +97,7 @@ const RestaurantDetails = () => {
                     <div className="flex mb-6">
                         {analytics.restaurantDetails?.image && (
                             <img 
-                                src={`https://mealmonkey.onrender.com${analytics.restaurantDetails.image}`} 
+                                src={`http://localhost:3000${analytics.restaurantDetails.image}`} 
                                 alt="Restaurant"
                                 className="w-96 h-64 mb-4 object-cover border-4 border-orange-300"
                             />

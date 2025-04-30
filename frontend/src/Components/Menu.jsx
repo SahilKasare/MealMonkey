@@ -75,7 +75,7 @@ const Menu = () => {
           >
             <div className="relative">
               <img
-                src={menuItem.image ? `https://mealmonkey.onrender.com${menuItem.image}` : "/public/Images/1727358391236.jpeg"}
+                src={menuItem.image ? `http://localhost:3000${menuItem.image}` : "/public/Images/1727358391236.jpeg"}
                 alt={menuItem.name}
                 className="w-36 h-36 object-cover rounded-md"
               />
@@ -283,7 +283,7 @@ const Menu = () => {
           <div className="space-y-6">
             <div className="w-full h-[400px] overflow-hidden rounded-lg">
               <img
-                src={`https://mealmonkey.onrender.com${restaurantDetails.photos[0]}`}
+                src={`http://localhost:3000${restaurantDetails.photos[0]}`}
                 alt="Restaurant Featured Photo"
                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               />

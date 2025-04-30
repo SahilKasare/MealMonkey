@@ -31,7 +31,7 @@ const RestaurantCard = ({ restaurant }) => {
     
     // Determine the image URL or use a placeholder if none exists
     const imageUrl = restaurant.photos.length > 0 
-        ? `https://mealmonkey.onrender.com${restaurant.photos[0]}`
+        ? `http://localhost:3000${restaurant.photos[0]}`
         : '/public/Images/no_image.png'; // Adjust this path according to your public folder structure
 
     const handleCardClick = () => {
