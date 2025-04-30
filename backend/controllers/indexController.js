@@ -185,7 +185,16 @@ module.exports.login = async function(req, res) {
 };
 
 module.exports.logout = function(req, res) {
-    res.clearCookie("token");
+    res.clearCookie('token', token, {
+        httpOnly: true,
+        secure: true, 
+        sameSite: 'None'  
+    });
+    res.clearCookie('role', user.role, {
+        httpOnly: true,
+        secure: true, 
+        sameSite: 'None', 
+    });
     res.redirect(303,"/");
 };
 
