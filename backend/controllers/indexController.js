@@ -185,17 +185,23 @@ module.exports.login = async function(req, res) {
 };
 
 module.exports.logout = function(req, res) {
-    res.clearCookie('token', token, {
-        httpOnly: true,
-        secure: true, 
-        sameSite: 'None'  
-    });
-    res.clearCookie('role', user.role, {
-        httpOnly: true,
-        secure: true, 
-        sameSite: 'None', 
-    });
-    res.status(200).json({ message: "Logged out" });
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+        });
+        res.clearCookie('role', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+        });
+
+        return res.status(200).json({ message: "Logged out" });
+    } catch (error) {
+        console.error("Logout error:", error);
+        return res.status(500).json({ error: "Logout failed" });
+    }
 };
 
 const getStartOfDay = () => {
