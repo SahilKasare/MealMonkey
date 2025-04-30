@@ -1,0 +1,13 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 30
+      arrivalRate: 10 
+
+scenarios:
+  - name: "Restaurant Menu"
+    flow:
+      - get:
+          url: "/restaurant/menu"
+          headers: 
+            userId: "66f490ba5260ca6de87bbb18"

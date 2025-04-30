@@ -12,9 +12,25 @@ const morgan = require('morgan');
 const logger = require('./utils/logger.js');
 const fs = require('fs');
 const helmet = require('helmet');
+const redis = require('redis')
 // Load environment variables
 
+const redisClient = redis.createClient();
 
+(async () => {
+  redisClient.on("error", (err) => {
+    console.error("Redis client error", err);
+  });
+
+  redisClient.on("ready", () => {
+    console.error("Redis client started"); 
+  });
+
+  await redisClient.connect();
+  await redisClient.ping();
+   
+})();
+module.exports = redisClient;
 // Middleware
 const app = express();
 dotenv.config();

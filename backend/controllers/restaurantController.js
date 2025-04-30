@@ -8,7 +8,7 @@ const Order=require('../models/orderModel')
 const Customer=require('../models/customerModel')
 const Review = require('../models/reviewModel');
 const Product = require('../models/productModel');
-
+const redisClient = require('../index')
 //Get restaurant details
 // controllers/restaurantController.js
 
@@ -133,7 +133,21 @@ module.exports.getRestaurant = async function(req, res) {
 // 1. List All Food Items
 module.exports.listMenu = async function(req, res) {
     try {
+        const userId = req.headers['userid'];
         const restaurant = await Restaurant.findById(req.userId).populate('menu');
+        // let restaurant = null;
+        // const key = `restaurant:${userId}:menu`;
+        // const value = await redisClient.get(key);
+
+        // if(value){
+        //     restaurant = JSON.parse(value);
+        //     console.log("cache hit")
+        // }else{
+        //     restaurant = await Restaurant.findById(userId).populate('menu');
+        //     await redisClient.setEx(key, 120, JSON.stringify(restaurant));
+        //     console.log("cache miss");
+        // }
+
         if (!restaurant) {
             return res.status(404).send("Restaurant not found.");
         }
