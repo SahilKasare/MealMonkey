@@ -115,10 +115,13 @@ import "./Header.css";
 import logo from "../../assets/images/logo.png";
 import { useUser } from "../../contexts/UserProvider";
 import axiosInstance from "../../utils/axiosInstance";
+import { useState } from "react";
+import { Menu, X } from "lucide-react"; // Or use any icon library
 
 const Header = () => {
-  const { user} = useUser();
+  const { user } = useUser();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const loggedIn = !!user;
   const role = user?.role;
@@ -126,20 +129,27 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await axiosInstance.get("/logout");
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
 
   return (
     <header className="header">
-      <Link to="/" className="w-52">
-        <img src={logo} alt="Logo" />
+      <Link to="/" className="logo-wrapper">
+        <img src={logo} alt="Logo" className="logo-img" />
       </Link>
 
-      <nav className="navbar">
+      <div className="hamburger" onClick={toggleMenu}>
+        {menuOpen ? <X color="#fff" size={28} /> : <Menu color="#fff" size={28} />}
+      </div>
+
+      <nav className={`navbar ${menuOpen ? "open" : ""}`}>
         {loggedIn && role === "restaurant" && (
           <>
             <Link to="/restaurant/">Home</Link>
@@ -173,37 +183,27 @@ const Header = () => {
             <Link to="/contact">Contact</Link>
           </>
         )}
-        {!loggedIn && <Link to="/">Home</Link>}
-        {!loggedIn && <Link to="/about">About</Link>}
-        {!loggedIn && <Link to="/contact">Contact</Link>}
-        {!loggedIn && <Link to="/FAQ">FAQs</Link>}
-      </nav>
-
-      <div className="text-xl text-black">
-        {loggedIn ? (
-          <button
-            className="relative text-white font-medium ml-[20px] text-[21px] transition-colors duration-300 hover:text-orange-500"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        ) : (
+        {!loggedIn && (
           <>
-            <Link
-              className="relative text-white font-medium ml-[70px] text-[21px] transition-colors duration-300 hover:text-orange-500"
-              to="/login"
-            >
-              Login
-            </Link>
-            <Link
-              className="relative text-white font-medium ml-[20px] text-[21px] transition-colors duration-300 hover:text-orange-500"
-              to="/register"
-            >
-              Register
-            </Link>
+            <Link to="/">Home</Link>
+            <Link to="/about">About</Link>
+            <Link to="/contact">Contact</Link>
+            <Link to="/FAQ">FAQs</Link>
           </>
         )}
-      </div>
+        <div className="auth-links">
+          {loggedIn ? (
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link className="login-btn" to="/login">Login</Link>
+              <Link className="register-btn" to="/register">Register</Link>
+            </>
+          )}
+        </div>
+      </nav>
     </header>
   );
 };

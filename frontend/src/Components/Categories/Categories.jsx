@@ -95,16 +95,12 @@
 //   );
 // };
 
-// export default Categories;
-
-
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../SearchBox/SearchBox.css';
 import './Categories.css';
-import topLeftImage from '../../assets/images/parachute-1.png'; // Top left image import
-import topRightImage from '../../assets/images/parachute-2.png'; // Top right image import
+import topLeftImage from '../../assets/images/parachute-1.png';
+import topRightImage from '../../assets/images/parachute-2.png';
 import deliveryBoy from "../../assets/images/delivery-boy.png";
 import burger from '../../assets/images/burger.png';
 import coffee from '../../assets/images/coffee.png';
@@ -131,44 +127,77 @@ const Categories = () => {
   const scrollRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const cardWidth = window.innerWidth / 5;
-  const visibleCount = 5;
+  const [cardWidth, setCardWidth] = useState(140); // Default minimum
+  const [visibleCount, setVisibleCount] = useState(2);
+  const [showArrows, setShowArrows] = useState(true);
+  
+  useEffect(() => {
+    // Function to update dimensions based on screen size
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      let cards = 2;
+      let cardSize = 140; // Default minimum
+      
+      if (width >= 1280) {
+        cards = 5;
+        cardSize = 180;
+      } else if (width >= 1024) {
+        cards = 4;
+        cardSize = 160;
+      } else if (width >= 768) {
+        cards = 3;
+        cardSize = 140;
+      } else if (width >= 480) {
+        cards = 2;
+        cardSize = 115;
+      } else {
+        cards = 2;
+        cardSize = 95;
+      }
+      
+      setVisibleCount(cards);
+      setCardWidth(cardSize);
+      setShowArrows(categories.length > cards);
+    };
 
-  const maxScrollPosition = (categories.length - visibleCount) * cardWidth;
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  // Calculate maximum scroll position
+  const maxScrollPosition = Math.max(0, categories.length * (cardWidth + 15) - (scrollRef.current?.clientWidth || 0));
 
   const scrollLeft = () => {
-    setScrollPosition((prevPos) => {
-      let newPos = prevPos - cardWidth;
-      if (newPos < 0) {
-        newPos = 0; // Reset to the start if already at the beginning
-      }
-      return newPos;
-    });
+    const newPosition = Math.max(0, scrollPosition - cardWidth * 2);
+    setScrollPosition(newPosition);
   };
 
   const scrollRight = () => {
-    setScrollPosition((prevPos) => {
-      let newPos = prevPos + cardWidth;
-      if (newPos > maxScrollPosition) {
-        newPos = maxScrollPosition; // Keep within the max scroll position
-      }
-      return newPos;
-    });
+    const newPosition = Math.min(scrollPosition + cardWidth * 2, maxScrollPosition);
+    setScrollPosition(newPosition);
   };
 
   useEffect(() => {
-    scrollRef.current.scrollTo({
-      left: scrollPosition,
-      behavior: 'smooth',
-    });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth',
+      });
+    }
   }, [scrollPosition]);
 
   const handleSearch = () => {
-    const category = categories.find(cat => cat.name.toLowerCase() === searchTerm.toLowerCase());
+    if (!searchTerm.trim()) return;
+    
+    const category = categories.find(
+      (cat) => cat.name.toLowerCase() === searchTerm.trim().toLowerCase()
+    );
     if (category) {
       navigate(`/customer/restaurants/${category.name.toLowerCase()}`);
     } else {
       console.log('Category not found');
+      // Could add visual feedback here
     }
   };
 
@@ -192,8 +221,11 @@ const Categories = () => {
             placeholder="Search for Your Favourite Food"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
           />
-          <button className="search-button" onClick={handleSearch}>SEARCH</button>
+          <button className="search-button" onClick={handleSearch}>
+            SEARCH
+          </button>
         </div>
 
         {/* Floating food icons */}
@@ -203,7 +235,6 @@ const Categories = () => {
           <div className="food-item food3"></div>
         </div>
 
-        {/* Add top left and top right floating images */}
         <img src={topLeftImage} alt="Top Left" className="floating-image top-left-img" />
         <img src={topRightImage} alt="Top Right" className="floating-image top-right-img" />
       </div>
@@ -211,14 +242,24 @@ const Categories = () => {
       <div className="categories-section">
         <div className="categories-header">
           <h2 className="categories-title">Categories</h2>
-          <div className="scroll-btn-container">
-            <button className="scroll-btn left-btn" onClick={scrollLeft}>
-              &lt;
-            </button>
-            <button className="scroll-btn right-btn" onClick={scrollRight}>
-              &gt;
-            </button>
-          </div>
+          {showArrows && (
+            <div className="scroll-btn-container">
+              <button 
+                className="scroll-btn left-btn" 
+                onClick={scrollLeft}
+                aria-label="Scroll left"
+              >
+                &lt;
+              </button>
+              <button 
+                className="scroll-btn right-btn" 
+                onClick={scrollRight}
+                aria-label="Scroll right"
+              >
+                &gt;
+              </button>
+            </div>
+          )}
         </div>
         <p className="categories-subtitle">
           Browse our top categories here to discover different food cuisines.
@@ -226,17 +267,29 @@ const Categories = () => {
         <div className="categories-container">
           <div className="categories-list" ref={scrollRef}>
             {categories.map((category, index) => (
-              <div 
-                className="category-card" 
-                key={index} 
+              <div
+                className="category-card"
+                key={index}
                 onClick={() => handleCategoryClick(category.name.toLowerCase())}
+                role="button"
+                aria-label={`View ${category.name} restaurants`}
               >
-                <img src={category.img} alt={category.name} className="category-img" />
+                <img 
+                  src={category.img} 
+                  alt={category.name} 
+                  className="category-img" 
+                  loading="lazy"
+                />
                 <p className="category-name">{category.name}</p>
               </div>
             ))}
           </div>
-          <img src={deliveryBoy} alt="Delivery Boy" className="scooter-img" />
+          <img 
+            src={deliveryBoy} 
+            alt="Delivery Boy" 
+            className="scooter-img" 
+            loading="lazy" 
+          />
         </div>
       </div>
     </div>
