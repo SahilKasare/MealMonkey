@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: mealmonkey-server
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      MONGO_URL: ${MONGO_URL}
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - mealmonkey-network
+
+  mongodb:
+    image: mongo
+    restart: always
+    container_name: mealmonkey-db
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - mealmonkey-network
+
+  redis:
+    image: redis/redis-stack
+    restart: always
+    container_name: mealmonkey-redis
+    ports:
+      - 6379:6379
+      - 8001:8001
+    networks:
+      - mealmonkey-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  mealmonkey-network:

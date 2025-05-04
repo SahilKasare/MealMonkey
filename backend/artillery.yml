@@ -11,3 +11,13 @@ scenarios:
           url: "/restaurant/menu"
           headers: 
             userId: "66f490ba5260ca6de87bbb18"
+
+  - name: "Restaurants by Food Type"
+    variables:
+      foodType:
+        - pizza
+        - burger
+        - coffee
+    flow:
+      - get:
+          url: "/customer/restaurants/by-food-type/{{ foodType }}"

@@ -148,7 +148,8 @@ const restaurantSchema = new mongoose.Schema({
 
 // Create Restaurant Model using Discriminator
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
-
+restaurantSchema.index({ username: 1 });
+restaurantSchema.index({ hotelName: 1 });
 module.exports = Restaurant;
 
 

@@ -20,5 +20,6 @@ const productSchema = new mongoose.Schema({
         type: Number
     },
 })
-
+productSchema.index({name : 1});
+productSchema.index({ foodType: 1});
 module.exports = mongoose.model("Product", productSchema)

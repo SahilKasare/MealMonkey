@@ -1,14 +1,39 @@
+// const mongoose = require("mongoose");
+// const dotenv = require("dotenv");
+// const logger = require("../utils/logger.js");
+
+// dotenv.config();
+
+// const connectDB = async (uri) => {
+//   try {
+//     const DB_URI = process.env.MONGO_URL;
+//     await mongoose.connect(uri ?? DB_URI, {});
+//     console.log("DB Connected");
+//   } catch (err) {
+//     console.error("MongoDB Connection Error : ", err);
+//     process.exit(-1);
+//   }
+// };
+
+// module.exports = { connectDB };
+
+
+
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
 dotenv.config();
-const MONGO_URL = process.env.MONGO_URL;
-mongoose.connect(`${MONGO_URL}`)
-.then(() => {
-    console.log("Connected to MongoDB");
-})
-.catch((err) =>{
-    console.log(err + ": Could not connect to MongoDB");
-})
 
+const connectDB = async (uri) => {
+  try {
+    const DB_URI = process.env.MONGO_URL;
+    // Adding recommended options for mongoose connection
+    await mongoose.connect(uri ?? DB_URI);
+    console.log("DB Connected");
+  } catch (err) {
+    console.error("MongoDB Connection Error: ", err);
+    process.exit(-1);  // Exit the process if DB connection fails
+  }
+};
 
-module.exports = mongoose.connection;
+module.exports = { connectDB };

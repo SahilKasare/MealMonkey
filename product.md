@@ -34,3 +34,17 @@ User Management: Manage users (customers, restaurants, delivery partners) includ
 Order Oversight: Monitor all orders in real-time, including order statuses, delays, and fulfillment issues.
 Revenue & Commission Management: Track the platform’s earnings from commission on orders, and manage payments to restaurants and delivery partners.
 Analytics & Reporting: Access detailed reports on platform activity, sales, delivery times, customer behavior, and operational efficiency.
+
+
+
+
+## Contribution
+
+Hrishikesh: Restaurant,redis
+Yadnyesh: User, testing, indexing, 
+NithinSai: Admin, Swagger config,
+Dheeraj: Admin pages, swagger routes
+Sahil: Delivery Partner, CI pipeline, dockerization
+
+
+
