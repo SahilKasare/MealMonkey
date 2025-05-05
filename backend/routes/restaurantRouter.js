@@ -4,7 +4,8 @@ const restaurantController = require("../controllers/restaurantController");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const upload = require('../middlewares/multerConfig'); // Import multer config
 const Auth = require("../middlewares/Auth")
-
+const Restaurant = require('../models/restaurantModel');
+const redisClient = require('../index')
 
 //Restaurant dashboard
 router.get("/",isLoggedIn, Auth.authorizeManager, restaurantController.getRestaurantDetails)
@@ -14,6 +15,35 @@ router.post("/profile", isLoggedIn, Auth.authorizeManager,upload.single('photos'
 
 // List menu items
 router.get("/menu", isLoggedIn, restaurantController.listMenu);
+
+//  router.get("/menu", async function(req, res){
+//      try {
+//          const userId = req.headers['userid'];
+//          let restaurant = null;
+//          const key = `restaurant:${userId}:menu`;
+//          const value = await redisClient.get(key);
+ 
+//          if(value){
+//              restaurant = JSON.parse(value);
+//              console.log("cache hit")
+//          }else{
+//              restaurant = await Restaurant.findById(userId).populate('menu');
+//              await redisClient.setEx(key, 120, JSON.stringify(restaurant));
+//              console.log("cache miss");
+//          }
+ 
+//          if (!restaurant) {
+//              return res.status(404).send("Restaurant not found.");
+//          }
+//          res.status(200).json(restaurant.menu);
+//      } catch (err) {
+//          console.log(err);
+//          res.status(500).send("Error fetching menu.");
+//      }
+//  });
+
+
+
 
 // Add a new food item
 router.post("/menu/item", isLoggedIn, Auth.authorizeManager, upload.single('image'), restaurantController.addItem);

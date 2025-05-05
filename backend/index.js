@@ -14,19 +14,19 @@ const redis = require("redis");
 
 const redisClient = redis.createClient();
 
-// (async () => {
-//   redisClient.on("error", (err) => {
-//     console.error("Redis client error", err);
-//   });
+(async () => {
+  redisClient.on("error", (err) => {
+    console.error("Redis client error", err);
+  });
 
-//   redisClient.on("ready", () => {
-//     console.error("Redis client started");
-//   });
+  redisClient.on("ready", () => {
+    console.error("Redis client started");
+  });
 
-//   await redisClient.connect();
-//   await redisClient.ping();
+  await redisClient.connect();
+  await redisClient.ping();
 
-// })();
+})();
 
 module.exports = redisClient;
 // Middleware
