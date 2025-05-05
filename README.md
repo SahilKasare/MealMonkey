@@ -13,6 +13,9 @@ We have 4 kinds of users,
 -Guest user is an additional user who can view restaurants and their menus but can't add items to the cart or place an order.
 
 Business Logic- Out of the total price of the order deducted from the customer's wallet, 80% goes to the restaurant, 10% to the admin and delivery partner each.
+
+To visit the live website, [Click Here](https://mealmonkey-food.vercel.app/).
+
 ## Getting Started
 
 To get started with Meal Monkey, follow these instructions to set up the project locally.
