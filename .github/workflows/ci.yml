@@ -5,6 +5,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET_KEY: test-secret-key
     steps:
       - name: Checkout
         uses: actions/checkout@v2
