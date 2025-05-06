@@ -15,6 +15,7 @@ We have 4 kinds of users,
 Business Logic- Out of the total price of the order deducted from the customer's wallet, 80% goes to the restaurant, 10% to the admin and delivery partner each.
 
 To visit the live website, [Click Here](https://mealmonkey-food.vercel.app/).
+To visit the swagger docs, [Click Here](https://mealmonkey.onrender.com/docs)
 
 ## Getting Started
 
