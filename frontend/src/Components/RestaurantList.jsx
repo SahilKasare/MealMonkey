@@ -34,7 +34,7 @@ const RestaurantsList = () => {
     useEffect(() => {
         if (searchQuery) {
             const updatedList = restaurants.filter((restaurant) =>
-                restaurant.hotelName.toLowerCase().includes(searchQuery.toLowerCase())
+                (restaurant.hotelName || '').toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredRestaurants(updatedList);
         } else {
@@ -48,25 +48,27 @@ const RestaurantsList = () => {
 
     if (loading) {
         return (
-            <div className="flex flex-col justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-                <p className="mt-4 text-blue-500 font-semibold">Loading restaurants...</p>
+            <div className="flex flex-col justify-center items-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500"></div>
+                <p className="mt-4 text-orange-500 font-semibold">Loading restaurants...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex justify-center items-center h-screen">
+            <div className="flex justify-center items-center min-h-[60vh]">
                 <p className="text-xl text-red-500">{error}</p>
             </div>
         );
     }
 
+    const capitalize = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
     return (
-        <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 py-10">
-            <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8">
-                {foodType ? `Top Picks for ${foodType}` : 'Explore Our Best Restaurants'}
+        <div className="min-h-[60vh] bg-gradient-to-b from-white via-gray-50 to-gray-100 py-10">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-800 mb-8">
+                {foodType ? `Top Picks for ${capitalize(foodType)}` : 'Explore Our Best Restaurants'}
             </h1>
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex justify-center mb-8">
@@ -75,7 +77,7 @@ const RestaurantsList = () => {
                         placeholder="Search for restaurants..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="border rounded-full px-6 py-3 w-full max-w-md shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+                        className="border rounded-full px-6 py-3 w-full max-w-md shadow-md focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-300"
                     />
                 </div>
                 {filteredRestaurants.length === 0 ? (
@@ -94,7 +96,7 @@ const RestaurantsList = () => {
                             <div className="flex justify-center mt-8">
                                 <button
                                     onClick={loadMoreRestaurants}
-                                    className="bg-blue-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-600 transition duration-300 transform hover:scale-105"
+                                    className="bg-orange-500 text-white px-6 py-3 rounded-full shadow-lg hover:bg-orange-600 transition duration-300 transform hover:scale-105"
                                 >
                                     Show More
                                 </button>

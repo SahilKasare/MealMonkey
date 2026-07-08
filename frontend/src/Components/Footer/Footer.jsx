@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaYoutube } from 'react-icons/fa';
 import './Footer.css'; // Importing the CSS file for styling
 import logo from "../../assets/images/logo.png";
 
@@ -7,55 +8,43 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section about">
-          <h1 className="footer-logo"><img src={logo} alt="Logo" /></h1>
+          <div className="footer-logo"><img src={logo} alt="MealMonkey" /></div>
           <p>
-            Welcome to our online order website! Here, you can browse our wide
-            selection of products and place orders from the comfort of your own home.
+            Welcome to MealMonkey! Browse our wide selection of restaurants and
+            dishes, and place orders from the comfort of your own home.
           </p>
           <div className="socials">
-            <Link to="/"><i className="fab fa-facebook"></i></Link>
-            <Link to="/"><i className="fab fa-twitter"></i></Link>
-            <Link to="/"><i className="fab fa-linkedin"></i></Link>
-            <Link to="/"><i className="fab fa-instagram"></i></Link>
-            <Link to="/"><i className="fab fa-youtube"></i></Link>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook"><FaFacebookF /></a>
+            <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter"><FaTwitter /></a>
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn"><FaLinkedinIn /></a>
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram"><FaInstagram /></a>
+            <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube"><FaYoutube /></a>
           </div>
         </div>
         <div className="footer-section links">
           <h2>Company</h2>
           <ul>
-            <li><Link to="/">About us</Link></li>
-            <li><Link to="/">Contact us</Link></li>
-            <li><Link to="/">Offer</Link></li>
-            <li><Link to="/">FAQs</Link></li>
+            <li><Link to="/about">About us</Link></li>
+            <li><Link to="/contact">Contact us</Link></li>
+            <li><Link to="/FAQ">FAQs</Link></li>
           </ul>
         </div>
         <div className="footer-section links">
           <h2>Account</h2>
           <ul>
-            <li><Link to="/">My orders</Link></li>
-            <li><Link to="/">Wishlist</Link></li>
-            <li><Link to="/">Shopping Cart</Link></li>
-            <li><Link to="/">Saved Address</Link></li>
+            <li><Link to="/customer/orders">My orders</Link></li>
+            <li><Link to="/customer/cart">Shopping Cart</Link></li>
+            <li><Link to="/login">Login</Link></li>
+            <li><Link to="/register">Register</Link></li>
           </ul>
         </div>
         <div className="footer-section links">
           <h2>Useful Links</h2>
           <ul>
-            <li><Link to="/">Blogs</Link></li>
-            <li><Link to="/login">Login</Link></li>
-            <li><Link to="/register">Register</Link></li>
-            <li><Link to="/">Profile</Link></li>
-            <li><Link to="/">Settings</Link></li>
-          </ul>
-        </div>
-        <div className="footer-section links">
-          <h2>Top Brands</h2>
-          <ul>
-            <li><Link to="/">PizzaBoy</Link></li>
-            <li><Link to="/">Saladish</Link></li>
-            <li><Link to="/">IcePops</Link></li>
-            <li><Link to="/">Mexican Hoy</Link></li>
-            <li><Link to="/">La Foodie</Link></li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+            <li><Link to="/FAQ">Help</Link></li>
           </ul>
         </div>
       </div>

@@ -6,7 +6,6 @@ import SignUp from './Components/signUp';
 import Login from './Components/Login';
 import { Provider } from 'react-redux';
 import store from './redux/store'
-import CustomerDashboard from './Components/customerDashboard';
 import RestaurantDashboard from './Components/RestaurantDashboard';
 import PopularRestaurants from './Components/PopularRestaurants';
 import SearchBox from './Components/SearchBox/SearchBox';

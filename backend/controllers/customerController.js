@@ -380,6 +380,7 @@ module.exports.getOrders = async function(req, res) {
             // Ensure restaurant data is available
             if (!order.restaurant) {
                 return {
+                    orderId: order._id,
                     restaurantId: null,
                     restaurantEmail: 'N/A',
                     items: order.items,
@@ -390,6 +391,7 @@ module.exports.getOrders = async function(req, res) {
             }
 
             return {
+                orderId: order._id,
                 restaurantId: order.restaurant._id,
                 restaurantEmail: order.restaurant.email,
                 items: order.items,

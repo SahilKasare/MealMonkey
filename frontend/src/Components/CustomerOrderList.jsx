@@ -19,9 +19,10 @@ const StatusBadge = ({ status }) => {
         cancelled: 'bg-red-100 text-red-700 border-red-200'
     };
 
+    const safeStatus = status || 'pending';
     return (
-        <span className={`px-3 py-1 rounded-full text-sm font-medium border ${statusStyles[status] || 'bg-gray-100 text-gray-700'}`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+        <span className={`px-3 py-1 rounded-full text-sm font-medium border ${statusStyles[safeStatus] || 'bg-gray-100 text-gray-700'}`}>
+            {safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1)}
         </span>
     );
 };
@@ -42,23 +43,23 @@ const OrderCard = ({ order, index }) => {
             >
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                            <FaStore className="text-blue-500 text-xl" />
-                            <h3 className="text-lg font-semibold text-gray-800">
+                        <div className="flex items-center space-x-3 min-w-0">
+                            <FaStore className="text-orange-500 text-xl flex-shrink-0" />
+                            <h3 className="text-lg font-semibold text-gray-800 truncate">
                                 {order.restaurantEmail}
                             </h3>
                         </div>
                         <StatusBadge status={order.status} />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-center space-x-2">
-                            <FaShoppingBag className="text-gray-400" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div className="flex items-center space-x-2 min-w-0">
+                            <FaShoppingBag className="text-gray-400 flex-shrink-0" />
                             <span className="text-gray-600">Order ID:</span>
-                            <span className="font-medium">{order.restaurantId}</span>
+                            <span className="font-medium truncate">#{(order.orderId || '').toString().slice(-6).toUpperCase() || 'N/A'}</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <FaMoneyBillWave className="text-gray-400" />
+                            <FaMoneyBillWave className="text-gray-400 flex-shrink-0" />
                             <span className="text-gray-600">Total:</span>
                             <span className="font-bold text-green-600">₹{order.totalAmount}</span>
                         </div>
@@ -85,8 +86,8 @@ const OrderCard = ({ order, index }) => {
                                                 key={idx} 
                                                 className="flex justify-between items-center p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                                             >
-                                                <span className="text-gray-700">{item.product.name}</span>
-                                                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                                                <span className="text-gray-700">{item.product?.name || 'Item unavailable'}</span>
+                                                <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
                                                     Qty: {item.quantity}
                                                 </span>
                                             </div>
@@ -112,20 +113,20 @@ const WalletSection = ({ balance, addAmount, setAddAmount, handleAddMoney }) => 
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
-                        <FaWallet className="text-2xl text-blue-500" />
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        <FaWallet className="text-2xl text-orange-500" />
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                             Wallet Balance
                         </h2>
                     </div>
-                    <div className="text-2xl font-bold text-gray-800">₹{balance}</div>
+                    <div className="text-2xl font-bold text-gray-800">₹{Number(balance || 0).toFixed(2)}</div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4">
                     <input
                         type="number"
                         placeholder="Amount to add"
-                        value={addAmount}
+                        value={addAmount || ''}
                         onChange={(e) => setAddAmount(Number(e.target.value))}
-                        className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
+                        className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 outline-none"
                         min="0"
                     />
                     <motion.button
@@ -133,10 +134,10 @@ const WalletSection = ({ balance, addAmount, setAddAmount, handleAddMoney }) => 
                         whileTap={{ scale: 0.98 }}
                         onClick={handleAddMoney}
                         disabled={addAmount <= 0}
-                        className={`px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-200 
-                            ${addAmount <= 0 
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-xl'
+                        className={`px-6 py-3 rounded-xl font-medium shadow-lg transition-all duration-200
+                            ${addAmount <= 0
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                : 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:shadow-xl'
                             }`}
                     >
                         Add Money
@@ -161,8 +162,8 @@ const OrdersList = () => {
                     axiosInstance.get('/customer/wallet')
                 ]);
                 
-                setOrders(ordersResponse.data);
-                setWalletBalance(walletResponse.data.balance);
+                setOrders(Array.isArray(ordersResponse.data) ? ordersResponse.data : []);
+                setWalletBalance(walletResponse.data?.balance ?? 0);
             } catch (error) {
                 console.error('Error fetching data:', error);
             } finally {
@@ -188,9 +189,9 @@ const OrdersList = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50">
+            <div className="flex items-center justify-center min-h-[60vh] bg-gray-50">
                 <div className="text-center">
-                    <FaSpinner className="animate-spin text-4xl text-blue-500 mx-auto mb-4" />
+                    <FaSpinner className="animate-spin text-4xl text-orange-500 mx-auto mb-4" />
                     <p className="text-gray-600">Loading your orders...</p>
                 </div>
             </div>
@@ -198,7 +199,7 @@ const OrdersList = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4 -mt-7">
+        <div className="min-h-[60vh] bg-gradient-to-br from-gray-50 to-orange-50 py-8 px-4">
             <div className="max-w-5xl mx-auto">
                 <WalletSection 
                     balance={walletBalance}
@@ -221,9 +222,9 @@ const OrdersList = () => {
                     ) : (
                         <div className="grid gap-6">
                             {orders.map((order, index) => (
-                                <OrderCard 
-                                    key={order.restaurantId} 
-                                    order={order} 
+                                <OrderCard
+                                    key={order.orderId || index}
+                                    order={order}
                                     index={index}
                                 />
                             ))}

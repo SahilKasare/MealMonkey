@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: 'user@gmail.com', password: 'User@123' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -14,11 +15,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Reset error
+    setLoading(true);
     try {
       const response = await axiosInstance.post('/login', formData);
       if (response.status === 200) {
         const userRole = response.data.role;
-        
+        // Let the header (and anything else listening) refresh its auth state.
+        window.dispatchEvent(new Event('auth-change'));
+
         if (userRole === 'admin') {
           navigate('/admin/');
         } else if (userRole === 'customer') {
@@ -27,24 +31,24 @@ const Login = () => {
           navigate('/restaurant/');
         } else if (userRole === 'deliveryPartner') {
           navigate('/deliveryPartner/');
+        } else {
+          navigate('/');
         }
       }
     } catch (error) {
-      setError(error.response?.data || "Login failed");
+      const data = error.response?.data;
+      setError(
+        typeof data === 'string'
+          ? data
+          : data?.message || 'Invalid email or password. Please try again.'
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-r from-orange-500 to-red-600 overflow-hidden -mt-16"> {/* Added -mt-16 to move upward */}
-      {/* Background food image */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://source.unsplash.com/1600x900/?food" 
-          alt="Food background" 
-          className="w-full h-full object-cover opacity-30 blur-sm"
-        />
-      </div>
-
+    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-r from-orange-500 to-red-600 overflow-hidden py-12 px-4">
       {/* Main content */}
       <div className="relative z-10 bg-white/80 p-10 rounded-3xl shadow-2xl w-full max-w-lg animate-fadeIn">
         <h2 className="text-3xl font-bold text-center text-gray-800 tracking-wide mb-6">Welcome Back</h2>
@@ -84,14 +88,15 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-lg font-semibold tracking-wide transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg"
+            disabled={loading}
+            className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-lg font-semibold tracking-wide transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            Login
+            {loading ? 'Logging in…' : 'Login'}
           </button>
         </form>
 
         <p className="mt-6 text-center text-gray-600">
-          Dont have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link to="/register" className="text-orange-500 hover:underline transition-all duration-200">
             Sign Up
           </Link>

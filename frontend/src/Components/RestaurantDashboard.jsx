@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserProvider';
 import axiosInstance from '../utils/axiosInstance';
+import { imageUrl } from '../config';
 import { motion } from 'framer-motion';
 import { FaWallet, FaChartLine, FaStore, FaMoneyBillWave } from 'react-icons/fa';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
@@ -89,7 +90,7 @@ const RestaurantDashboard = () => {
                     <div className="relative h-64">
                         {restaurant.photos && restaurant.photos[0] && (
                             <img
-                                src={`http://localhost:3000${restaurant.photos[0]}`}
+                                src={imageUrl(restaurant.photos[0])}
                                 alt="Restaurant"
                                 className="w-full h-full object-cover"
                             />

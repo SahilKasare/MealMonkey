@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 
 const AddMenuItemForm = () => {
   const [name, setName] = useState('');
@@ -8,10 +8,14 @@ const AddMenuItemForm = () => {
   const [foodType, setFoodType] = useState('');
   const [discount, setDiscount] = useState('');
   const [image, setImage] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     const formData = new FormData();
     formData.append('name', name);
     formData.append('price', price);
@@ -20,28 +24,25 @@ const AddMenuItemForm = () => {
     formData.append('image', image);
 
     try {
-      const res = await axios.post(
-        'http://localhost:3000/restaurant/menu/item',
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          withCredentials: true,
-        }
-      );
-      console.log(res.data);
-      alert('Menu item added successfully');
-      navigate('/restaurant');
-    } catch (error) {
-      console.error('Error adding menu item', error);
+      await axiosInstance.post('/restaurant/menu/item', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      navigate('/restaurant/menu');
+    } catch (err) {
+      const data = err.response?.data;
+      setError(typeof data === 'string' ? data : 'Error adding menu item. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg- flex items-center justify-center p-6">
-      <form onSubmit={handleSubmit} className="w-full max-w-5xl bg-white rounded-xl shadow-lg p-8">
+    <div className="min-h-[60vh] flex items-center justify-center p-6">
+      <form onSubmit={handleSubmit} className="w-full max-w-3xl bg-white rounded-xl shadow-lg p-8">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Menu Item</h2>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <div>
               <label className="block text-gray-700 font-medium mb-2">Dish Name:</label>
@@ -49,7 +50,7 @@ const AddMenuItemForm = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Enter dish name"
                 required
               />
@@ -61,7 +62,7 @@ const AddMenuItemForm = () => {
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Enter price"
                 required
               />
@@ -73,7 +74,7 @@ const AddMenuItemForm = () => {
                 type="text"
                 value={foodType}
                 onChange={(e) => setFoodType(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Enter food type (e.g., Vegan, Non-Veg)"
                 required
               />
@@ -87,7 +88,7 @@ const AddMenuItemForm = () => {
                 type="number"
                 value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 placeholder="Enter discount (optional)"
               />
             </div>
@@ -98,16 +99,17 @@ const AddMenuItemForm = () => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => setImage(e.target.files[0])}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full mt-6 py-4 bg-gradient-to-r from-yellow-400 to-red-500 text-white rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity"
+              disabled={loading}
+              className="w-full mt-6 py-4 bg-gradient-to-r from-orange-400 to-red-500 text-white rounded-lg font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Add Menu Item
+              {loading ? 'Adding…' : 'Add Menu Item'}
             </button>
           </div>
         </div>

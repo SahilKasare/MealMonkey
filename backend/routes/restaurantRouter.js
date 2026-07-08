@@ -69,8 +69,17 @@ router.post("/status/open", isLoggedIn, restaurantController.updateOpenStatus);
 // View order queue
 router.get("/orders/queue", isLoggedIn, restaurantController.viewOrderQueue);
 
+// Get pending orders
+router.get("/orders/pending", isLoggedIn, restaurantController.getPendingOrders);
+
+// Accept an order
+router.post("/orders/accept/:orderId", isLoggedIn, restaurantController.acceptOrder);
+
 // Reject an order
 router.post("/orders/reject/:orderId", isLoggedIn, restaurantController.rejectOrder);
+
+// Update order status (generic)
+router.put("/orders/:orderId/status", isLoggedIn, restaurantController.updateOrderStatus);
 
 // Get order history
 router.get("/orders/history", isLoggedIn, restaurantController.getOrderHistory);
@@ -92,6 +101,10 @@ router.put("/updateItem/:id", isLoggedIn, restaurantController.updateMenuItem);
 
 
 router.get("/orders",isLoggedIn, restaurantController.getOrdersByRestaurant)
+
+// Test endpoint
+router.get("/test", isLoggedIn, restaurantController.testEndpoint)
+
 module.exports = router;
 
 /**

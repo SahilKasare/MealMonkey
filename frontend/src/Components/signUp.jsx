@@ -5,6 +5,7 @@ import axiosInstance from '../utils/axiosInstance';
 const SignUp = () => {
   const [formData, setFormData] = useState({ username: '', email: '', password: '', role: '', contact: '', fullAddress: '', pincode: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const onChange = (e) => {
@@ -13,21 +14,27 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(formData)
     setError(''); // Reset error
+    setLoading(true);
     try {
       const response = await axiosInstance.post('/register', formData);
       if (response.status === 201) {
         navigate('/login'); // Redirect to login after successful registration
       }
     } catch (error) {
-      setError(error.response?.data || "Registration failed");
+      const data = error.response?.data;
+      setError(
+        typeof data === 'string'
+          ? data
+          : data?.message || 'Registration failed. Please try again.'
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-orange-100 to-white relative -mt-5">
-      <div className="absolute inset-0 bg-cover bg-center opacity-10" style={{ backgroundImage: "url('https://your-image-url.com/bg.jpg')" }}></div>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-orange-100 to-white py-12 px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md z-10 relative">
         <h2 className="text-3xl font-bold text-center text-gray-800">Sign Up to MealMonkey</h2>
         <p className="text-center text-gray-500 mb-6">Join the best food delivery platform</p>
@@ -115,9 +122,10 @@ const SignUp = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-105"
+            disabled={loading}
+            className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-lg font-semibold transition duration-300 transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            Create Account
+            {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">

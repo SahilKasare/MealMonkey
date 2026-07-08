@@ -34,9 +34,24 @@ const app = express();
 dotenv.config();
 
 //Application level middleware
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://mealmonkey-food.vercel.app",
+];
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://mealmonkey-food.vercel.app"], // Your frontend URL
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl) and any
+      // localhost port during development, plus the whitelisted production URLs.
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        /^http:\/\/localhost:\d+$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true, // This allows cookies to be included in cross-origin requests
   })
 );

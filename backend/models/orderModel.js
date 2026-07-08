@@ -34,26 +34,18 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['pending', 'accepted', 'rejected', 'completed','delivery_rejected'],
-        default: 'Pending' // Default status is pending when the order is created
+        default: 'pending' // Default status is pending when the order is created
     },
     totalAmount: {
         type: Number,
         required: true // Total amount of the order
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
     },
     refund: {
         type: Boolean,
         default: false // Track if a refund has been issued
     }
 }, {
-    timestamps: true
+    timestamps: true // This will automatically add createdAt and updatedAt
 });
 
 module.exports = mongoose.model('Order', orderSchema);

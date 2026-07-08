@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "test": "jest",
-    "start": "node server.js"
+    "start": "bun run --watch server.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",

@@ -15,7 +15,13 @@ export const UserProvider = ({ children }) => {
                 // console.log('User data received:', response.data); 
                 setUser(response.data);
             } catch (error) {
-                console.error('Error fetching user:', error);
+                // A 401/403 simply means no one is logged in yet — that's expected,
+                // so only surface unexpected failures.
+                const status = error?.response?.status;
+                if (status && status !== 401 && status !== 403) {
+                    console.error('Error fetching user:', error);
+                }
+                setUser(null);
             } finally {
                 setLoading(false);
             }

@@ -1,42 +1,8 @@
-import React, { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 const FAQ = () => {
   const [openQuestion, setOpenQuestion] = useState(null);
-  const [activeDropdown, setActiveDropdown] = useState(null);
-
-  const navItems = {
-    home: ["Classic", "Elegance", "Compact", "Minimal", "Modern"],
-    order: [
-      "Menu Listing",
-      "Menu Grid",
-      "Address",
-      "Checkout",
-      "Confirm Order",
-      "Offer",
-      "Order Tracking",
-      "Payment",
-      "Restaurant Listing",
-    ],
-    blog: [
-      "Grid Left Sidebar",
-      "Grid Right Sidebar",
-      "Blog Listening",
-      "Blog Details",
-    ],
-    pages: [
-      "404",
-      "Coming Soon",
-      "Contact",
-      "Empty Cart",
-      "FAQ",
-      "OTP",
-      "Sign In",
-      "Signup",
-      "Testimonial",
-      "Wishlist",
-    ],
-  };
 
   const faqData = [
     {
@@ -87,12 +53,12 @@ const FAQ = () => {
           </h1>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-          <div className="flex items-center justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <div className="hidden lg:flex items-center justify-center">
             <img
               src="https://cdni.iconscout.com/illustration/premium/thumb/faq-illustration-download-in-svg-png-gif-file-formats--customer-questions-interrogation-point-and-answers-helpful-information-q-a-whoooa-solid-1-pack-people-illustrations-3779152.png"
               alt="FAQ illustration"
-              className="max-w-md"
+              className="max-w-md w-full"
             />
           </div>
 
@@ -116,7 +82,7 @@ const FAQ = () => {
                 <div
                   className={`px-6 transition-all duration-300 ease-in-out ${
                     openQuestion === faq.id
-                      ? "max-h-96 py-4"
+                      ? "max-h-[600px] py-4"
                       : "max-h-0 overflow-hidden"
                   }`}
                 >

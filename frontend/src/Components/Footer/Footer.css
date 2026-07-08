@@ -1,116 +1,137 @@
 .footer {
     background-color: #222;
     color: #ccc;
-    padding: 30px 20px;
+    padding: 40px 20px 20px;
     display: flex;
-    flex-direction: column; /* Stack content vertically */
-    align-items: center; /* Center align content */
+    flex-direction: column;
+    align-items: center;
 }
 
 .footer-content {
     display: flex;
-    justify-content: space-between; /* Space out columns evenly */
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
     width: 100%;
-    padding: 0 40px; /* Add padding to the left and right */
+    max-width: 1200px;
+    padding: 0 20px;
 }
 
 .footer-section {
-    flex: 1; /* Make sections flexible */
-    margin: 20px; /* Space between sections */
-    min-width: 150px; /* Minimum width for responsiveness */
-    display: flex; /* Use Flexbox for alignment */
-    flex-direction: column; /* Stack elements vertically */
-    align-items: flex-start; /* Align items to the start (left) */
+    flex: 1 1 180px;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.footer-logo {
-    font-size: 36px;
-    color: #fff;
-    padding-left: 20px; /* Add padding from left */
+.footer-section.about {
+    flex: 1 1 280px;
+    max-width: 340px;
 }
 
-.dot {
-    color: orange;
+.footer-logo img {
+    height: 44px;
+    width: auto;
+    object-fit: contain;
 }
 
 .footer p {
-    font-size: 18px;
+    font-size: 15px;
     line-height: 1.6;
-    margin: 10px 0;
+    margin: 14px 0;
 }
 
 .footer-section h2 {
     color: orange;
-    font-size: 25px; /* Increase font size for column titles */
-    margin-bottom: 10px; /* Space below the heading */
-    position: relative; /* Position for pseudo-element */
-    padding-left: 10px; /* Space between vertical line and heading */
-    margin-left: 30px;
+    font-size: 20px;
+    margin-bottom: 16px;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .footer-section h2::before {
     content: '';
     display: inline-block;
-    width: 3px; /* Width of the vertical line */
-    height: 22px; /* Height of the vertical line */
-    background-color: orange; /* Color of the vertical line */
-    margin-right: 8px; /* Space between the line and the title */
+    width: 3px;
+    height: 20px;
+    background-color: orange;
+    margin-right: 10px;
 }
 
 .footer-section ul {
     list-style: none;
     padding: 0;
-    margin: 0; /* Reset margin for ul */
-    width: 100%; /* Ensure ul takes full width */
+    margin: 0;
+    width: 100%;
 }
 
 .footer-section ul li {
-    margin-bottom: 10px; /* Spacing between items */
-    margin-left: 42px;
-    margin-top: 15px;
+    margin-bottom: 12px;
 }
 
 .footer-section ul li a {
     color: #ccc;
     text-decoration: none;
-    font-size: 21px; /* Increase font size for links */
-    transition: padding-left 0.5s ease, color 0.5s ease; /* Smooth transition */
+    font-size: 15px;
+    transition: padding-left 0.3s ease, color 0.3s ease;
 }
 
 .footer-section ul li a:hover {
-    color: #FF8C00; /* Change color on hover to a variant of orange */
-    padding-left: 7px; /* Add left padding on hover */
+    color: #FF8C00;
+    padding-left: 6px;
 }
 
 .socials {
     display: flex;
-    margin-top: 20px;
+    gap: 14px;
+    margin-top: 16px;
 }
 
 .socials a {
     color: #fff;
-    font-size: 30px;
-    margin-right: 10px;
-    text-decoration: none;
+    font-size: 18px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #333;
+    transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .socials a:hover {
-    color: orange;
+    background: orange;
+    transform: translateY(-3px);
 }
 
 .footer-divider {
     width: 100%;
+    max-width: 1200px;
     border: 0;
     height: 1px;
-    background: #444; /* Color of the horizontal line */
-    margin: 20px 0; /* Space above and below the line */
+    background: #444;
+    margin: 28px 0 16px;
 }
 
 .copyright {
-    font-size: 28px; /* Increase font size for copyright */
-    font-weight: 500; /* Make the copyright text bold */
-    color: #ccc; /* Match text color */
-    text-align: center; /* Center the copyright text */
-    margin: 10px 0; /* Margin around copyright */
-    margin-bottom: 0px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #aaa;
+    text-align: center;
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .footer-content {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .footer-section,
+    .footer-section.about {
+        max-width: 100%;
+    }
 }

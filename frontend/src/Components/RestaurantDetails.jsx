@@ -64,6 +64,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
+import { imageUrl } from '../config';
 
 const RestaurantDetails = () => {
     const { restaurantId } = useParams();
@@ -96,8 +97,8 @@ const RestaurantDetails = () => {
                     {/* Restaurant Details */}
                     <div className="flex mb-6">
                         {analytics.restaurantDetails?.image && (
-                            <img 
-                                src={`http://localhost:3000${analytics.restaurantDetails.image}`} 
+                            <img
+                                src={imageUrl(analytics.restaurantDetails.image)}
                                 alt="Restaurant"
                                 className="w-96 h-64 mb-4 object-cover border-4 border-orange-300"
                             />

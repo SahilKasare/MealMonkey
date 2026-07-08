@@ -356,9 +356,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserProvider'; // Adjust the path based on your project structure
+import axiosInstance from '../../utils/axiosInstance';
 
-
-import axios from 'axios';
 const RestaurantForm = () => {
   const { user } = useUser(); // Get user data from UserProvider
   const navigate = useNavigate();
@@ -505,20 +504,17 @@ const RestaurantForm = () => {
     }
   
     try {
-      const response = await axios.post('http://localhost:3000/restaurant/profile', formData, {
-        // Content-Type is not set; let the browser handle it
+      await axiosInstance.post('/restaurant/profile', formDataToSubmit, {
         headers: {
           'Content-Type': 'multipart/form-data', // Set the correct content type
         },
-        withCredentials: true,
       });
-      console.log('Success:', response.data);
       alert('Profile updated successfully');
       navigate('/restaurant');
     } catch (error) {
       console.error('Error submitting form:', error);
+      alert('Error updating profile. Please try again.');
     }
-    navigate('/restaurant/')
   };
   
 

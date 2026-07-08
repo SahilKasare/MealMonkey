@@ -4,10 +4,11 @@ const ADMIN_ID = 'yourAdminIdHere';
 const Restaurant = require('../models/restaurantModel');
 const Transaction=require('../models/transactionModel')
 const Order=require('../models/orderModel')
-
 const Customer=require('../models/customerModel')
 const Review = require('../models/reviewModel');
 const Product = require('../models/productModel');
+const DeliveryPartner = require('../models/deliveryPartnerModel');
+const Admin = require('../models/AdminModel');
 //Get restaurant details
 // controllers/restaurantController.js
 
@@ -381,20 +382,43 @@ module.exports.updateOpenStatus = async function(req, res) {
 
 module.exports.viewOrderQueue = async function(req, res) {
     try {
-        // Find the restaurant using the logged-in user's ID
-        const restaurant = await Restaurant.findById(req.userId).populate('orderQueue');
+        const restaurantId = req.userId;
+        console.log('Fetching order queue for restaurant ID:', restaurantId);
+
+        // Find the restaurant and populate the order queue with full order details
+        const restaurant = await Restaurant.findById(restaurantId).populate({
+            path: 'orderQueue',
+            populate: {
+                path: 'customer',
+                select: 'name email'
+            }
+        });
 
         if (!restaurant) {
-            return res.status(404).send("Restaurant not found.");
+            return res.status(404).json({ error: "Restaurant not found." });
         }
 
-        // Return the order queue
+        // Format the order queue response
+        const formattedQueue = restaurant.orderQueue.map(order => ({
+            orderId: order._id,
+            customerId: order.customer?._id,
+            customerName: order.customer?.name,
+            customerEmail: order.customer?.email,
+            items: order.items || [],
+            totalAmount: order.totalAmount,
+            status: order.status,
+            createdAt: order.createdAt
+        }));
+
+        console.log('Order queue found:', formattedQueue.length, 'orders');
+
         res.status(200).json({
-            orderQueue: restaurant.orderQueue
+            orderQueue: formattedQueue,
+            count: formattedQueue.length
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error fetching order queue.");
+        console.error('Error in viewOrderQueue:', err);
+        res.status(500).json({ error: "Error fetching order queue.", details: err.message });
     }
 };
 
@@ -403,83 +427,242 @@ module.exports.viewOrderQueue = async function(req, res) {
 
 
 
-// Function to reject an order
+// Function to reject an order (Simplified)
 module.exports.rejectOrder = async function(req, res) {
     try {
-        const { orderId } = req.params; // Assume order ID is passed as a URL parameter
+        const { orderId } = req.params;
+        const restaurantId = req.userId;
 
-        // Find the restaurant and order
-        const restaurant = await Restaurant.findById(req.userId);
-        const order = await Order.findById(orderId).populate('customer');
+        console.log('Rejecting order:', orderId, 'for restaurant:', restaurantId);
 
-        if (!restaurant || !order) {
-            return res.status(404).send("Restaurant or order not found.");
+        // Find the order
+        const order = await Order.findById(orderId);
+        
+        if (!order) {
+            return res.status(404).json({ error: "Order not found." });
         }
 
-        // Update order status to rejected
+        // Verify order belongs to this restaurant
+        if (order.restaurant.toString() !== restaurantId) {
+            return res.status(403).json({ error: "Order doesn't belong to this restaurant." });
+        }
+
+        // Check if order can be rejected
+        if (order.status !== 'pending') {
+            return res.status(400).json({ error: `Order is already ${order.status}. Cannot reject.` });
+        }
+
+        // Update order status
         order.status = 'rejected';
-        order.history.push(order._id); // Move order to history
         await order.save();
 
-        // Calculate amounts
-        const refundAmount = order.amount; // Total order amount
-        const restaurantDeduction = refundAmount * 0.8; // 80% from restaurant
-        const adminDeduction = refundAmount * 0.1; // 10% from admin
-        const customerCredit = refundAmount * 0.1; // 10% credited to customer's wallet
-
-        // Update restaurant wallet
-        restaurant.wallet.balance -= restaurantDeduction;
-        await restaurant.save();
-
-        // Update customer wallet
-        const customer = await Customer.findById(order.customer._id);
-        customer.wallet.balance += customerCredit;
-        await customer.save();
-        
-        const admin=await Customer.findById(ADMIN_ID);
-        // Create transactions
-        await Transaction.create([
-            {
-                amount: restaurantDeduction,
-                from: { type: 'Restaurant', id: restaurant._id },
-                to: { type: 'Customer', id: customer._id }, 
-                isRefund: true
-            },
-            {
-                amount: adminDeduction,
-                from: { type: 'Customer', id: admin._Id },
-                to: { type: 'Customer', id: customer._id },
-                isRefund: true
-            }
-        ]);
+        console.log('Order rejected successfully:', orderId);
 
         res.status(200).json({
-            message: "Order rejected and amounts refunded.",
-            order
+            message: "Order rejected successfully.",
+            order: {
+                id: order._id,
+                status: order.status,
+                totalAmount: order.totalAmount
+            }
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error rejecting the order.");
+        console.error('Error in rejectOrder:', err);
+        res.status(500).json({ error: "Error rejecting the order.", details: err.message });
     }
 };
 
+// Function to accept an order (Simplified)
+module.exports.acceptOrder = async function(req, res) {
+    try {
+        const { orderId } = req.params;
+        const restaurantId = req.userId;
+
+        console.log('Accepting order:', orderId, 'for restaurant:', restaurantId);
+
+        // Find the order
+        const order = await Order.findById(orderId);
+        
+        if (!order) {
+            return res.status(404).json({ error: "Order not found." });
+        }
+
+        // Verify order belongs to this restaurant
+        if (order.restaurant.toString() !== restaurantId) {
+            return res.status(403).json({ error: "Order doesn't belong to this restaurant." });
+        }
+
+        // Check if order can be accepted
+        if (order.status !== 'pending') {
+            return res.status(400).json({ error: `Order is already ${order.status}. Cannot accept.` });
+        }
+
+        // Update order status
+        order.status = 'accepted';
+        await order.save();
+
+        console.log('Order accepted successfully:', orderId);
+
+        res.status(200).json({
+            message: "Order accepted successfully.",
+            order: {
+                id: order._id,
+                status: order.status,
+                totalAmount: order.totalAmount
+            }
+        });
+    } catch (err) {
+        console.error('Error in acceptOrder:', err);
+        res.status(500).json({ error: "Error accepting the order.", details: err.message });
+    }
+};
+
+// Function to update order status (generic function for status updates)
+module.exports.updateOrderStatus = async function(req, res) {
+    try {
+        const { orderId } = req.params;
+        const { status } = req.body;
+        const restaurantId = req.userId;
+
+        console.log('Updating order status:', orderId, 'to:', status, 'for restaurant:', restaurantId);
+
+        // Validate status
+        const validStatuses = ['pending', 'accepted', 'rejected', 'completed', 'delivery_rejected'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ error: "Invalid status. Valid statuses: " + validStatuses.join(', ') });
+        }
+
+        // Find the order and verify it belongs to this restaurant
+        const order = await Order.findOne({ _id: orderId, restaurant: restaurantId }).populate('customer');
+        
+        if (!order) {
+            return res.status(404).json({ error: "Order not found or doesn't belong to this restaurant." });
+        }
+
+        // Find the restaurant
+        const restaurant = await Restaurant.findById(restaurantId);
+        if (!restaurant) {
+            return res.status(404).json({ error: "Restaurant not found." });
+        }
+
+        // Update order status
+        const oldStatus = order.status;
+        order.status = status;
+        await order.save();
+
+        // Handle status-specific logic
+        if (status === 'accepted' || status === 'rejected' || status === 'completed') {
+            // Move to order history
+            if (!restaurant.orderHistory.includes(orderId)) {
+                restaurant.orderHistory.push(orderId);
+            }
+            // Remove from queue
+            restaurant.orderQueue = restaurant.orderQueue.filter(id => id.toString() !== orderId);
+            await restaurant.save();
+        }
+
+        console.log('Order status updated successfully:', orderId, 'from', oldStatus, 'to', status);
+
+        res.status(200).json({
+            message: `Order status updated from ${oldStatus} to ${status}.`,
+            order: {
+                id: order._id,
+                status: order.status,
+                totalAmount: order.totalAmount,
+                customer: order.customer?.name || 'Unknown'
+            }
+        });
+    } catch (err) {
+        console.error('Error in updateOrderStatus:', err);
+        res.status(500).json({ error: "Error updating order status.", details: err.message });
+    }
+};
+
+// Function to get pending orders
+module.exports.getPendingOrders = async function(req, res) {
+    try {
+        const restaurantId = req.userId;
+        console.log('Fetching pending orders for restaurant ID:', restaurantId);
+
+        // Find all pending orders for this restaurant
+        const pendingOrders = await Order.find({ 
+            restaurant: restaurantId, 
+            status: 'pending' 
+        })
+        .populate({
+            path: 'customer',
+            select: 'name email'
+        })
+        .populate({
+            path: 'items.product',
+            select: 'name price image'
+        })
+        .sort({ createdAt: -1 }) // Most recent first
+        .lean();
+
+        console.log('Pending orders found:', pendingOrders.length);
+
+        // Format the response
+        const formattedOrders = pendingOrders.map(order => ({
+            orderId: order._id,
+            customerId: order.customer?._id,
+            customerName: order.customer?.name,
+            customerEmail: order.customer?.email,
+            items: order.items || [],
+            totalAmount: order.totalAmount,
+            status: order.status,
+            createdAt: order.createdAt
+        }));
+
+        res.status(200).json({
+            pendingOrders: formattedOrders,
+            count: formattedOrders.length
+        });
+    } catch (err) {
+        console.error('Error in getPendingOrders:', err);
+        res.status(500).json({ error: "Error fetching pending orders.", details: err.message });
+    }
+};
 
 
 //Controller to get order history
 module.exports.getOrderHistory = async function(req, res) {
     try {
-        // Find the restaurant by the user ID
-        const restaurant = await Restaurant.findById(req.userId).populate('orderHistory');
+        const restaurantId = req.userId;
+        console.log('Fetching order history for restaurant ID:', restaurantId);
+
+        // Find the restaurant by the user ID and populate orderHistory
+        const restaurant = await Restaurant.findById(restaurantId)
+            .populate({
+                path: 'orderHistory',
+                populate: {
+                    path: 'customer',
+                    select: 'email name'
+                }
+            });
 
         if (!restaurant) {
-            return res.status(404).send("Restaurant not found.");
+            return res.status(404).json({ error: "Restaurant not found." });
         }
 
-        // Return the order history
-        res.status(200).json(restaurant.orderHistory);
+        console.log('Order history found:', restaurant.orderHistory.length);
+
+        // Return the order history with proper formatting
+        const formattedHistory = restaurant.orderHistory.map(order => ({
+            orderId: order._id,
+            customerId: order.customer?._id,
+            customerEmail: order.customer?.email,
+            customerName: order.customer?.name,
+            items: order.items || [],
+            totalAmount: order.totalAmount,
+            status: order.status,
+            createdAt: order.createdAt
+        }));
+
+        res.status(200).json(formattedHistory);
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error fetching order history.");
+        console.error('Error in getOrderHistory:', err);
+        res.status(500).json({ error: "Error fetching order history.", details: err.message });
     }
 };
 
@@ -685,7 +868,7 @@ module.exports.writeReview = async function(req, res) {
         // Create the review
         const newReview = new Review({
             source: {
-                restaurnat: req.userId, // Assuming req.userId is the ID of the user writing the review
+                restaurant: req.userId, // Assuming req.userId is the ID of the user writing the review
             },
             target: {
                 [targetType.toLowerCase()]: targetId, // Dynamically set the target type
@@ -754,35 +937,52 @@ module.exports.updateMenuItem = async function(req, res) {
 
 
 
-// Fetch all orders for a specific restaurant
+// Fetch all orders for a specific restaurant (Simplified)
 module.exports.getOrdersByRestaurant = async (req, res) => {
     try {
-        const restaurantId = req.userId; // Assuming req.userId contains the restaurant ID from the auth middleware
+        const restaurantId = req.userId;
 
-        // Find all orders related to the restaurant and populate customer email and product details
+        console.log('Fetching orders for restaurant ID:', restaurantId);
+
+        // Find all orders for this restaurant
         const orders = await Order.find({ restaurant: restaurantId })
-            .populate('customer', 'email name') // Populate customer email and name
-            .populate('items.product'); // Populate product details in the items
+            .populate('customer', 'email name')
+            .sort({ createdAt: -1 }) // Most recent first
+            .lean();
 
-        // Check if orders exist
-        if (!orders || orders.length === 0) {
-            return res.status(200).json([]); // Return an empty array if no orders are found
-        }
+        console.log('Found orders:', orders.length);
 
         // Format the response
         const formattedOrders = orders.map(order => ({
-            customerId: order.customer._id,
-            customerEmail: order.customer.email,
-            customerName: order.customer.name,
-            items: order.items,
+            orderId: order._id,
+            customerId: order.customer?._id,
+            customerEmail: order.customer?.email,
+            customerName: order.customer?.name,
             totalAmount: order.totalAmount,
-            createdAt: order.createdAt
+            status: order.status,
+            createdAt: order.createdAt,
+            itemCount: order.items?.length || 0
         }));
 
+        console.log('Formatted orders:', formattedOrders.length);
         res.status(200).json(formattedOrders);
     } catch (err) {
-        console.error(err);
-        res.status(500).send("Error fetching restaurant orders.");
+        console.error('Error in getOrdersByRestaurant:', err);
+        res.status(500).json({ error: "Error fetching restaurant orders.", details: err.message });
+    }
+};
+
+// Simple test endpoint to verify the controller is working
+module.exports.testEndpoint = async (req, res) => {
+    try {
+        res.status(200).json({ 
+            message: "Restaurant controller is working!",
+            userId: req.userId,
+            timestamp: new Date().toISOString()
+        });
+    } catch (err) {
+        console.error('Test endpoint error:', err);
+        res.status(500).json({ error: "Test endpoint failed", details: err.message });
     }
 };
 
